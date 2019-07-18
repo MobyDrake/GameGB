@@ -17,7 +17,7 @@ public class MenuScreen extends BaseScreen {
     private Vector2 touch;
     private Vector2 touchBuff;
 
-    private final float V_LEN = 2f;
+    private final float V_LEN = 0.02f;
 
 
     @Override
@@ -40,7 +40,8 @@ public class MenuScreen extends BaseScreen {
         Gdx.gl.glClearColor(0.26f, 0.5f, 0.8f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
-        batch.draw(texture, imgPosition.x, imgPosition.y);
+//        batch.draw(texture, imgPosition.x, imgPosition.y);
+        batch.draw(texture, imgPosition.x, imgPosition.y, 0.25f, 0.25f);
         batch.end();
     }
 
@@ -51,10 +52,10 @@ public class MenuScreen extends BaseScreen {
     }
 
     @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        touch.set(screenX, Gdx.graphics.getHeight() - screenY);
+    public boolean touchDown(Vector2 touch, int pointer, int button) {
+        this.touch.set(touch);
         speedV.set(touch.cpy().sub(imgPosition)).setLength(V_LEN);
-        return false;
+        return super.touchDown(touch, pointer, button);
     }
 
     @Override
