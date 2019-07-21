@@ -82,6 +82,12 @@ public abstract class BaseScreen implements Screen, InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
+        keyDown(keycode, worldBounds);
+        return false;
+    }
+
+    public boolean keyDown(int keycode, Rect worldBounds) {
+
         return false;
     }
 
@@ -99,10 +105,16 @@ public abstract class BaseScreen implements Screen, InputProcessor {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         touch.set(screenX, screenBounds.getHeight() - screenY).mul(screenToWorld);
         touchDown(touch, pointer, button);
+        touchDown(touch, pointer, button, worldBounds);
         return false;
     }
 
     public boolean touchDown(Vector2 touch, int pointer, int button) {
+
+        return false;
+    }
+
+    public boolean touchDown(Vector2 touch, int pointer, int button, Rect worldBounds) {
 
         return false;
     }

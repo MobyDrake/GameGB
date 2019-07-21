@@ -52,6 +52,8 @@ public abstract class Sprite extends Rect {
         return false;
     }
 
+
+
     public float getAngle() {
         return angle;
     }
