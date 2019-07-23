@@ -71,6 +71,7 @@ public class GameScreen extends BaseScreen {
         for(Star star : starArray) {
             star.update(delta);
         }
+        player.update(delta);
 
     }
 
@@ -88,15 +89,28 @@ public class GameScreen extends BaseScreen {
         batch.end();
     }
 
+
     @Override
-    public boolean keyDown(int keycode, Rect worldBounds) {
-        player.keyDown(keycode, worldBounds);
-        return super.keyDown(keycode, worldBounds);
+    public boolean keyDown(int keycode) {
+        player.keyDown(keycode);
+        return super.keyDown(keycode);
     }
 
     @Override
-    public boolean touchDown(Vector2 touch, int pointer, int button, Rect worldBounds) {
-        player.touchDown(touch, pointer, button, worldBounds);
-        return super.touchDown(touch, pointer, button, worldBounds);
+    public boolean keyUp(int keycode) {
+        player.keyUp(keycode);
+        return super.keyUp(keycode);
+    }
+
+    @Override
+    public boolean touchDown(Vector2 touch, int pointer, int button) {
+        player.touchDown(touch, pointer, button);
+        return super.touchDown(touch, pointer, button);
+    }
+
+    @Override
+    public boolean touchUp(Vector2 touch, int pointer, int button) {
+        player.touchUp(touch, pointer, button);
+        return super.touchUp(touch, pointer, button);
     }
 }

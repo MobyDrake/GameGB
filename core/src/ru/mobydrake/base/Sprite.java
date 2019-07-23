@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.mobydrake.math.Rect;
+import ru.mobydrake.utils.Regions;
 
 public abstract class Sprite extends Rect {
 
@@ -16,7 +17,10 @@ public abstract class Sprite extends Rect {
     public Sprite(TextureRegion region) {
         this.regions = new TextureRegion[1];
         this.regions[0] = region;
-        setHeightProportion(0.3f);
+    }
+
+    public Sprite(TextureRegion region, int rows, int cols, int frames) {
+        this.regions = Regions.split(region, rows, cols, frames);
     }
 
     public void setHeightProportion(float height) {
@@ -49,6 +53,15 @@ public abstract class Sprite extends Rect {
     }
 
     public boolean touchUp(Vector2 touch, int pointer, int button) {
+        return false;
+    }
+
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+
+    public boolean keyUp(int keycode) {
         return false;
     }
 
