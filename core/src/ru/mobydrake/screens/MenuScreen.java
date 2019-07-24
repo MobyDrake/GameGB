@@ -2,6 +2,7 @@ package ru.mobydrake.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -20,6 +21,8 @@ public class MenuScreen extends BaseScreen {
     private final int STAR_COUNT = 256;
     private Game game;
 
+    private Music music = Gdx.audio.newMusic(Gdx.files.internal("music/music.mp3"));
+
     private TextureAtlas atlas;
     private Texture bg;
     private Background background;
@@ -34,6 +37,9 @@ public class MenuScreen extends BaseScreen {
     @Override
     public void show() {
         super.show();
+
+        music.play();
+        music.setLooping(true);
 
         bg = new Texture("textures/bg.png");
         background = new Background(new TextureRegion(bg));
@@ -92,6 +98,7 @@ public class MenuScreen extends BaseScreen {
     public void dispose() {
         atlas.dispose();
         bg.dispose();
+        music.dispose();
         super.dispose();
     }
 

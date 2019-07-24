@@ -1,6 +1,7 @@
 package ru.mobydrake.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -9,6 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.mobydrake.base.BaseScreen;
 import ru.mobydrake.math.Rect;
+import ru.mobydrake.pools.BulettPool;
 import ru.mobydrake.sprites.Background;
 import ru.mobydrake.sprites.MainShip;
 import ru.mobydrake.sprites.Star;
@@ -21,12 +23,18 @@ public class GameScreen extends BaseScreen {
     private Texture bg;
     private Background background;
     private Star[] starArray;
+    private Music music = Gdx.audio.newMusic(Gdx.files.internal("music/music.mp3"));
+
+    private BulettPool bulettPool;
 
     private MainShip player;
 
     @Override
     public void show() {
         super.show();
+
+        music.play();
+        music.setLooping(true);
 
         bg = new Texture("textures/bg.png");
         background = new Background(new TextureRegion(bg));
@@ -37,16 +45,18 @@ public class GameScreen extends BaseScreen {
         for (int i = 0; i < STAR_COUNT; i++) {
             starArray[i] = new Star(atlas);
         }
-
-        player = new MainShip(atlas);
+        bulettPool = new BulettPool();
+        player = new MainShip(atlas, bulettPool);
     }
 
     @Override
     public void render(float delta) {
         super.render(delta);
         update(delta);
+        freeAllDestroyedActiveSprites();
         draw();
     }
+
 
     @Override
     public void resize(Rect worldBounds) {
@@ -64,6 +74,9 @@ public class GameScreen extends BaseScreen {
     public void dispose() {
         bg.dispose();
         atlas.dispose();
+        bulettPool.dispose();
+        music.dispose();
+        player.dispose();
         super.dispose();
     }
 
@@ -71,8 +84,13 @@ public class GameScreen extends BaseScreen {
         for(Star star : starArray) {
             star.update(delta);
         }
+        bulettPool.updateActiveSprites(delta);
         player.update(delta);
 
+    }
+
+    private void freeAllDestroyedActiveSprites() {
+        bulettPool.freeAllDestroyedActiveSprites();
     }
 
     private void draw() {
@@ -84,7 +102,7 @@ public class GameScreen extends BaseScreen {
         for(Star star : starArray) {
             star.draw(batch);
         }
-
+        bulettPool.drawActiveSprites(batch);
         player.draw(batch);
         batch.end();
     }

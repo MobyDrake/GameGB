@@ -13,6 +13,10 @@ public abstract class Sprite extends Rect {
     protected float scale = 1f;
     protected TextureRegion[] regions;
     protected int frame;
+    private boolean destroyed;
+
+    public Sprite() {
+    }
 
     public Sprite(TextureRegion region) {
         this.regions = new TextureRegion[1];
@@ -65,7 +69,17 @@ public abstract class Sprite extends Rect {
         return false;
     }
 
+    public void destroy() {
+        destroyed = true;
+    }
 
+    public void flushDestroy() {
+        destroyed = false;
+    }
+
+    public boolean isDestroyed() {
+        return destroyed;
+    }
 
     public float getAngle() {
         return angle;
