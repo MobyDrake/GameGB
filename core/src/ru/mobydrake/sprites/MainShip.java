@@ -10,16 +10,16 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.mobydrake.base.Sprite;
 import ru.mobydrake.math.Rect;
-import ru.mobydrake.pools.BulettPool;
+import ru.mobydrake.pools.BulletPool;
 
 public class MainShip extends Sprite {
 
     private static final int INVALID_POINTER = -1;
-    private static Sound soundShoot = Gdx.audio.newSound(Gdx.files.internal("music/bullet.wav"));
+    private static Sound soundShoot = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet.wav"));
 
     private TextureRegion bulletRegion;
     private Rect worldBounds;
-    private BulettPool bulettPool;
+    private BulletPool bulletPool;
 
     private Vector2 v = new Vector2();
     private Vector2 v0 = new Vector2(0.5f, 0);
@@ -34,9 +34,9 @@ public class MainShip extends Sprite {
     private float reloadInterval;
     private float reloadTimer;
 
-    public MainShip(TextureAtlas region, BulettPool bulettPool) {
+    public MainShip(TextureAtlas region, BulletPool bulletPool) {
         super(region.findRegion("main_ship"), 1, 2, 2);
-        this.bulettPool = bulettPool;
+        this.bulletPool = bulletPool;
         bulletRegion = region.findRegion("bulletMainShip");
         reloadInterval = 0.2f;
     }
@@ -167,7 +167,7 @@ public class MainShip extends Sprite {
     }
 
     private void shoot() {
-        Bullet bullet = bulettPool.obtain();
+        Bullet bullet = bulletPool.obtain();
         bullet.set(this, bulletRegion, pos, bulletV, 0.01f, worldBounds, 1);
         soundShoot.setPitch(soundShoot.play(), 2);
         //soundShoot.play();
