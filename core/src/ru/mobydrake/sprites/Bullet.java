@@ -34,4 +34,12 @@ public class Bullet extends Sprite {
         pos.mulAdd(speedV, delta);
         if (isOutside(worldBounds)) destroy();
     }
+
+    public int getDamage() {
+        return damage;
+    }
+
+    public Object getOwner() {
+        return owner;
+    }
 }

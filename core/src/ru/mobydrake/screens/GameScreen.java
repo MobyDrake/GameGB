@@ -11,9 +11,11 @@ import com.badlogic.gdx.math.Vector2;
 import ru.mobydrake.base.BaseScreen;
 import ru.mobydrake.math.Rect;
 import ru.mobydrake.pools.BulletPool;
+import ru.mobydrake.pools.EnemyPool;
 import ru.mobydrake.sprites.Background;
 import ru.mobydrake.sprites.MainShip;
 import ru.mobydrake.sprites.Star;
+import ru.mobydrake.utils.EnemyGenerator;
 
 public class GameScreen extends BaseScreen {
 
@@ -29,11 +31,14 @@ public class GameScreen extends BaseScreen {
 
     private MainShip player;
 
+    private EnemyPool enemyPool;
+    private EnemyGenerator enemyGenerator;
+
     @Override
     public void show() {
         super.show();
 
-        music = Gdx.audio.newMusic(Gdx.files.internal("sounds/sounds.mp3"));
+        music = Gdx.audio.newMusic(Gdx.files.internal("sounds/music.mp3"));
         music.play();
         music.setLooping(true);
 
@@ -50,12 +55,16 @@ public class GameScreen extends BaseScreen {
 
         bulletPool = new BulletPool();
         player = new MainShip(atlas, bulletPool);
+
+        enemyPool = new EnemyPool(bulletPool, worldBounds);
+        enemyGenerator = new EnemyGenerator(enemyPool, atlas, worldBounds);
     }
 
     @Override
     public void render(float delta) {
         super.render(delta);
         update(delta);
+        checkCollision();
         freeAllDestroyedActiveSprites();
         draw();
     }
@@ -80,6 +89,7 @@ public class GameScreen extends BaseScreen {
         bulletPool.dispose();
         music.dispose();
         player.dispose();
+        enemyPool.dispose();
         super.dispose();
     }
 
@@ -89,11 +99,17 @@ public class GameScreen extends BaseScreen {
         }
         bulletPool.updateActiveSprites(delta);
         player.update(delta);
+        enemyPool.updateActiveSprites(delta);
+        enemyGenerator.generate(delta);
+    }
+
+    private void checkCollision() {
 
     }
 
     private void freeAllDestroyedActiveSprites() {
         bulletPool.freeAllDestroyedActiveSprites();
+        enemyPool.freeAllDestroyedActiveSprites();
     }
 
     private void draw() {
@@ -105,8 +121,9 @@ public class GameScreen extends BaseScreen {
         for(Star star : starArray) {
             star.draw(batch);
         }
-        bulletPool.drawActiveSprites(batch);
         player.draw(batch);
+        bulletPool.drawActiveSprites(batch);
+        enemyPool.drawActiveSprites(batch);
         batch.end();
     }
 
