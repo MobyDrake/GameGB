@@ -13,6 +13,8 @@ import ru.mobydrake.math.Rect;
 import ru.mobydrake.pools.BulletPool;
 import ru.mobydrake.pools.EnemyPool;
 import ru.mobydrake.sprites.Background;
+import ru.mobydrake.sprites.Bullet;
+import ru.mobydrake.sprites.Enemy;
 import ru.mobydrake.sprites.MainShip;
 import ru.mobydrake.sprites.Star;
 import ru.mobydrake.utils.EnemyGenerator;
@@ -104,7 +106,25 @@ public class GameScreen extends BaseScreen {
     }
 
     private void checkCollision() {
+        for(Enemy enemy : enemyPool.getActiveObjects()) {
+            if (!enemy.isOutside(player)) {
+                enemy.destroy();
+            }
+        }
 
+        for (Bullet bullet : bulletPool.getActiveObjects()) {
+            if (bullet.getOwner() == player) {
+               for (Enemy enemy : enemyPool.getActiveObjects()) {
+                   if (!enemy.isOutside(bullet)) {
+                       bullet.destroy();
+                       enemy.setHp(enemy.getHp() - bullet.getDamage());
+                       if (enemy.getHp() <= 0) {
+                           enemy.destroy();
+                       }
+                   }
+               }
+            }
+        }
     }
 
     private void freeAllDestroyedActiveSprites() {
