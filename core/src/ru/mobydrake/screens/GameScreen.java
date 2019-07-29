@@ -106,23 +106,47 @@ public class GameScreen extends BaseScreen {
     }
 
     private void checkCollision() {
-        for(Enemy enemy : enemyPool.getActiveObjects()) {
-            if (!enemy.isOutside(player)) {
-                enemy.destroy();
+        //вариант через for each
+//        for(Enemy enemy : enemyPool.getActiveObjects()) {
+//            if (!enemy.isOutside(player)) {
+//                enemy.destroy();
+//            }
+//        }
+
+        for (int i = 0; i < enemyPool.getActiveObjects().size(); i++) {
+            if (!enemyPool.getActiveObjects().get(i).isOutside(player)) {
+                enemyPool.getActiveObjects().get(i).destroy();
             }
         }
+        //вариант через for each
 
-        for (Bullet bullet : bulletPool.getActiveObjects()) {
+//        for (Bullet bullet : bulletPool.getActiveObjects()) {
+//            if (bullet.getOwner() == player) {
+//               for (Enemy enemy : enemyPool.getActiveObjects()) {
+//                   if (!enemy.isOutside(bullet)) {
+//                       bullet.destroy();
+//                       enemy.setHp(enemy.getHp() - bullet.getDamage());
+//                       if (enemy.getHp() <= 0) {
+//                           enemy.destroy();
+//                       }
+//                   }
+//               }
+//            }
+//        }
+
+        for (int i = 0; i < bulletPool.getActiveObjects().size(); i++) {
+            Bullet bullet = bulletPool.getActiveObjects().get(i);
             if (bullet.getOwner() == player) {
-               for (Enemy enemy : enemyPool.getActiveObjects()) {
-                   if (!enemy.isOutside(bullet)) {
-                       bullet.destroy();
-                       enemy.setHp(enemy.getHp() - bullet.getDamage());
-                       if (enemy.getHp() <= 0) {
-                           enemy.destroy();
-                       }
-                   }
-               }
+                for (int j = 0; j < enemyPool.getActiveObjects().size(); j++) {
+                    Enemy enemy = enemyPool.getActiveObjects().get(j);
+                    if (!enemy.isOutside(bullet)) {
+                        bullet.destroy();
+                        enemy.setHp(enemy.getHp() - bullet.getDamage());
+                        if (enemy.getHp() <= 0) {
+                            enemy.destroy();
+                        }
+                    }
+                }
             }
         }
     }
