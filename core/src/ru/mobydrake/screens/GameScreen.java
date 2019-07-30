@@ -19,9 +19,10 @@ import ru.mobydrake.pools.EnemyPool;
 import ru.mobydrake.pools.ExplosionPool;
 import ru.mobydrake.sprites.Background;
 import ru.mobydrake.sprites.Bullet;
+import ru.mobydrake.sprites.ButtonNewGame;
 import ru.mobydrake.sprites.Enemy;
-import ru.mobydrake.sprites.Explosion;
 import ru.mobydrake.sprites.MainShip;
+import ru.mobydrake.sprites.GameOver;
 import ru.mobydrake.sprites.Star;
 import ru.mobydrake.utils.EnemyGenerator;
 
@@ -48,6 +49,9 @@ public class GameScreen extends BaseScreen {
 
     private State state;
     private State stateBuff;
+
+    private GameOver gameOverSprite;
+    private ButtonNewGame buttonNewGame;
 
     @Override
     public void show() {
@@ -78,6 +82,9 @@ public class GameScreen extends BaseScreen {
 
         state = State.PLAYING;
         stateBuff = State.PLAYING;
+
+        gameOverSprite = new GameOver(atlas);
+        buttonNewGame = new ButtonNewGame(atlas, this);
     }
 
     @Override
@@ -100,6 +107,8 @@ public class GameScreen extends BaseScreen {
         }
 
         player.resize(worldBounds);
+        gameOverSprite.resize(worldBounds);
+        buttonNewGame.resize(worldBounds);
     }
 
     @Override
@@ -203,6 +212,10 @@ public class GameScreen extends BaseScreen {
             bulletPool.drawActiveSprites(batch);
             enemyPool.drawActiveSprites(batch);
         }
+        if (state == State.GAME_OVER) {
+            gameOverSprite.draw(batch);
+            buttonNewGame.draw(batch);
+        }
         batch.end();
     }
 
@@ -220,6 +233,10 @@ public class GameScreen extends BaseScreen {
         if (state == State.PLAYING) {
             player.keyDown(keycode);
         }
+
+        if (keycode == Input.Keys.G) {
+            state = State.GAME_OVER;
+        }
         return super.keyDown(keycode);
     }
 
@@ -236,6 +253,7 @@ public class GameScreen extends BaseScreen {
         if (state == State.PLAYING) {
             player.touchDown(touch, pointer, button);
         }
+        buttonNewGame.touchDown(touch, pointer, button);
         return super.touchDown(touch, pointer, button);
     }
 
@@ -244,6 +262,7 @@ public class GameScreen extends BaseScreen {
         if (state == State.PLAYING) {
             player.touchUp(touch, pointer, button);
         }
+        buttonNewGame.touchUp(touch, pointer, button);
         return super.touchUp(touch, pointer, button);
     }
 
@@ -257,5 +276,13 @@ public class GameScreen extends BaseScreen {
     private void pauseOff() {
         state = stateBuff;
         music.play();
+    }
+
+    public void newGame() {
+        state = stateBuff;
+        player.setHp(10);
+        enemyPool.destroydAllSprites();
+        bulletPool.destroydAllSprites();
+        explosionPool.destroydAllSprites();
     }
 }
