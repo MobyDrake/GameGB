@@ -39,6 +39,20 @@ public abstract class SpritesPool<T extends Sprite> {
         }
     }
 
+    public void disposeAllSprites() {
+        for(T sprite : activeObjects) {
+            if (!sprite.isDestroyed()) {
+                sprite.dispose();
+            }
+        }
+
+        for(T sprite : freeObjects) {
+            if (!sprite.isDestroyed()) {
+                sprite.dispose();
+            }
+        }
+    }
+
     public void freeAllDestroyedActiveSprites() {
         for (int i = 0; i < activeObjects.size(); i++) {
             T sprite = activeObjects.get(i);
@@ -57,6 +71,7 @@ public abstract class SpritesPool<T extends Sprite> {
     }
 
     public void dispose() {
+        disposeAllSprites();
         activeObjects.clear();
         freeObjects.clear();
     }

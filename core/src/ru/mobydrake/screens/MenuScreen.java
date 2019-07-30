@@ -21,7 +21,7 @@ public class MenuScreen extends BaseScreen {
     private final int STAR_COUNT = 256;
     private Game game;
 
-    private Music music = Gdx.audio.newMusic(Gdx.files.internal("sounds/sounds.mp3"));
+    private Music music = Gdx.audio.newMusic(Gdx.files.internal("sounds/music.mp3"));
 
     private TextureAtlas atlas;
     private Texture bg;
