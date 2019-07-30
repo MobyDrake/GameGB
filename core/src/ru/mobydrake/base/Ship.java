@@ -7,7 +7,9 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.mobydrake.math.Rect;
 import ru.mobydrake.pools.BulletPool;
+import ru.mobydrake.pools.ExplosionPool;
 import ru.mobydrake.sprites.Bullet;
+import ru.mobydrake.sprites.Explosion;
 
 public abstract class Ship extends Sprite {
 
@@ -20,6 +22,8 @@ public abstract class Ship extends Sprite {
 
     protected Sound shootSound;
 
+    protected ExplosionPool explosionPool;
+
     protected BulletPool bulletPool;
     protected float reloadInterval;
     protected float reloadTimer;
@@ -27,6 +31,9 @@ public abstract class Ship extends Sprite {
 
     protected int hp;
     protected int damage;
+
+    private final float damageAnimateInterval = 0.1f;
+    private float damageAnimateTimer = damageAnimateInterval;
 
 
     public Ship() {
@@ -42,6 +49,14 @@ public abstract class Ship extends Sprite {
     }
 
     @Override
+    public void update(float delta) {
+        damageAnimateTimer += delta;
+        if (damageAnimateTimer >= damageAnimateInterval) {
+            frame = 0;
+        }
+    }
+
+    @Override
     public void dispose() {
         shootSound.dispose();
     }
@@ -53,8 +68,25 @@ public abstract class Ship extends Sprite {
         shootSound.play();
     }
 
-    public void setHp(int hp) {
-        this.hp = hp;
+    private void boom() {
+        Explosion explosion = explosionPool.obtain();
+        explosion.set(getHeight(), pos);
+    }
+
+    public void damage(int damage) {
+        frame = 1;
+        damageAnimateTimer = 0f;
+        hp -= damage;
+        if (hp <= 0) {
+            destroy();
+        }
+    }
+
+    @Override
+    public void destroy() {
+        hp = 0;
+        boom();
+        super.destroy();
     }
 
     public int getHp() {

@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import ru.mobydrake.base.Ship;
 import ru.mobydrake.math.Rect;
 import ru.mobydrake.pools.BulletPool;
+import ru.mobydrake.pools.ExplosionPool;
 
 public class Enemy extends Ship {
 
@@ -15,8 +16,9 @@ public class Enemy extends Ship {
     private State state;
     private Vector2 descentV = new Vector2(0, -0.15f);
 
-    public Enemy(BulletPool bulletPool, Rect worldBounds) {
+    public Enemy(BulletPool bulletPool, ExplosionPool explosionPool, Rect worldBounds) {
         this.bulletPool = bulletPool;
+        this.explosionPool = explosionPool;
         this.worldBounds = worldBounds;
         this.shootSound = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet.wav"));
 
@@ -54,6 +56,7 @@ public class Enemy extends Ship {
 
     @Override
     public void update(float delta) {
+        super.update(delta);
         pos.mulAdd(v, delta);
         switch (state) {
             case DESCENT:
@@ -73,5 +76,14 @@ public class Enemy extends Ship {
         if (getBottom() < worldBounds.getBottom()) {
             destroy();
         }
+    }
+
+    public boolean isBulletCollision(Rect bullet) {
+        return  !(
+                bullet.getRight() < getLeft()
+                || bullet.getLeft() > getRight()
+                || bullet.getBottom() > getTop()
+                || bullet.getTop() < pos.y
+                );
     }
 }

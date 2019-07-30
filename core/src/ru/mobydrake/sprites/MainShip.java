@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import ru.mobydrake.base.Ship;
 import ru.mobydrake.math.Rect;
 import ru.mobydrake.pools.BulletPool;
+import ru.mobydrake.pools.ExplosionPool;
 
 public class MainShip extends Ship {
 
@@ -20,10 +21,13 @@ public class MainShip extends Ship {
     private int leftPointer = INVALID_POINTER;
     private int rightPointer = INVALID_POINTER;
 
-    public MainShip(TextureAtlas region, BulletPool bulletPool) {
+
+
+    public MainShip(TextureAtlas region, BulletPool bulletPool, ExplosionPool explosionPool) {
         super(region.findRegion("main_ship"), 1, 2, 2);
 
         this.bulletPool = bulletPool;
+        this.explosionPool = explosionPool;
         bulletRegion = region.findRegion("bulletMainShip");
         reloadInterval = 0.2f;
 
@@ -162,5 +166,14 @@ public class MainShip extends Ship {
 
     private void stop() {
         v.setZero();
+    }
+
+    public boolean isBulletCollision(Rect bullet) {
+        return !(
+                bullet.getRight() < getLeft()
+                || bullet.getLeft() > getRight()
+                || bullet.getBottom() > pos.y
+                || bullet.getTop() < getBottom()
+                );
     }
 }

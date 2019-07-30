@@ -2,7 +2,6 @@ package ru.mobydrake.sprites;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import ru.mobydrake.base.ScaleTouchUpButton;
 import ru.mobydrake.math.Rect;
