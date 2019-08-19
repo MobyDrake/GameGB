@@ -14,7 +14,7 @@ import ru.mobydrake.pools.ExplosionPool;
 public class MainShip extends Ship {
 
     private static final int INVALID_POINTER = -1;
-    private static final int HP = 10;
+    private static final int HP = 100;
 
     private boolean pressedRight = false;
     private boolean pressedLeft = false;
