@@ -23,6 +23,6 @@ public class ButtonNewGame extends ScaleTouchUpButton {
 
     @Override
     public void action() {
-        gameScreen.newGame();
+        gameScreen.startNewGame();
     }
 }

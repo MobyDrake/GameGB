@@ -253,7 +253,9 @@ public class GameScreen extends BaseScreen {
         if (state == State.PLAYING) {
             player.touchDown(touch, pointer, button);
         }
-        buttonNewGame.touchDown(touch, pointer, button);
+        if (state == State.GAME_OVER) {
+            buttonNewGame.touchDown(touch, pointer, button);
+        }
         return super.touchDown(touch, pointer, button);
     }
 
@@ -262,7 +264,9 @@ public class GameScreen extends BaseScreen {
         if (state == State.PLAYING) {
             player.touchUp(touch, pointer, button);
         }
-        buttonNewGame.touchUp(touch, pointer, button);
+        if (state == State.GAME_OVER) {
+            buttonNewGame.touchUp(touch, pointer, button);
+        }
         return super.touchUp(touch, pointer, button);
     }
 
@@ -278,11 +282,13 @@ public class GameScreen extends BaseScreen {
         music.play();
     }
 
-    public void newGame() {
+    public void startNewGame() {
         state = stateBuff;
-        player.setHp(10);
-        enemyPool.destroydAllSprites();
-        bulletPool.destroydAllSprites();
-        explosionPool.destroydAllSprites();
+
+        player.startNewGame();
+
+        enemyPool.freeAllActiveObject();
+        bulletPool.freeAllActiveObject();
+        explosionPool.freeAllActiveObject();
     }
 }

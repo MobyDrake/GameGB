@@ -14,6 +14,7 @@ import ru.mobydrake.pools.ExplosionPool;
 public class MainShip extends Ship {
 
     private static final int INVALID_POINTER = -1;
+    private static final int HP = 10;
 
     private boolean pressedRight = false;
     private boolean pressedLeft = false;
@@ -39,7 +40,7 @@ public class MainShip extends Ship {
         bulletHeight = 0.01f;
 
         damage = 1;
-        hp = 10;
+        hp = HP;
     }
 
     @Override
@@ -175,5 +176,19 @@ public class MainShip extends Ship {
                 || bullet.getBottom() > pos.y
                 || bullet.getTop() < getBottom()
                 );
+    }
+
+    public void startNewGame() {
+        stop();
+
+        pressedLeft = false;
+        pressedRight = false;
+        leftPointer = INVALID_POINTER;
+        rightPointer = INVALID_POINTER;
+
+        hp = HP;
+        pos.x = worldBounds.pos.x;
+
+        flushDestroy();
     }
 }
