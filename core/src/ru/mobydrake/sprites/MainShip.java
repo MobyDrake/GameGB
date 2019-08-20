@@ -9,10 +9,12 @@ import com.badlogic.gdx.math.Vector2;
 import ru.mobydrake.base.Ship;
 import ru.mobydrake.math.Rect;
 import ru.mobydrake.pools.BulletPool;
+import ru.mobydrake.pools.ExplosionPool;
 
 public class MainShip extends Ship {
 
     private static final int INVALID_POINTER = -1;
+    private static final int HP = 10;
 
     private boolean pressedRight = false;
     private boolean pressedLeft = false;
@@ -20,10 +22,13 @@ public class MainShip extends Ship {
     private int leftPointer = INVALID_POINTER;
     private int rightPointer = INVALID_POINTER;
 
-    public MainShip(TextureAtlas region, BulletPool bulletPool) {
+
+
+    public MainShip(TextureAtlas region, BulletPool bulletPool, ExplosionPool explosionPool) {
         super(region.findRegion("main_ship"), 1, 2, 2);
 
         this.bulletPool = bulletPool;
+        this.explosionPool = explosionPool;
         bulletRegion = region.findRegion("bulletMainShip");
         reloadInterval = 0.2f;
 
@@ -35,7 +40,7 @@ public class MainShip extends Ship {
         bulletHeight = 0.01f;
 
         damage = 1;
-        hp = 10;
+        hp = HP;
     }
 
     @Override
@@ -162,5 +167,28 @@ public class MainShip extends Ship {
 
     private void stop() {
         v.setZero();
+    }
+
+    public boolean isBulletCollision(Rect bullet) {
+        return !(
+                bullet.getRight() < getLeft()
+                || bullet.getLeft() > getRight()
+                || bullet.getBottom() > pos.y
+                || bullet.getTop() < getBottom()
+                );
+    }
+
+    public void startNewGame() {
+        stop();
+
+        pressedLeft = false;
+        pressedRight = false;
+        leftPointer = INVALID_POINTER;
+        rightPointer = INVALID_POINTER;
+
+        hp = HP;
+        pos.x = worldBounds.pos.x;
+
+        flushDestroy();
     }
 }

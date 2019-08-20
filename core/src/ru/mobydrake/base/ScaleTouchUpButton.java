@@ -3,6 +3,7 @@ package ru.mobydrake.base;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
+
 public abstract class ScaleTouchUpButton extends Sprite {
 
     private static float PRESS_SCALE = 0.9f;
