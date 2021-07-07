@@ -15,12 +15,15 @@ public class Enemy extends Ship {
     private enum State {DESCENT, FIGHT}
     private State state;
     private Vector2 descentV = new Vector2(0, -0.15f);
+    private MainShip mainShip;
+    private int score;
 
-    public Enemy(BulletPool bulletPool, ExplosionPool explosionPool, Rect worldBounds) {
+    public Enemy(BulletPool bulletPool, ExplosionPool explosionPool, Rect worldBounds, MainShip mainShip) {
         this.bulletPool = bulletPool;
         this.explosionPool = explosionPool;
         this.worldBounds = worldBounds;
         this.shootSound = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet.wav"));
+        this.mainShip = mainShip;
 
         v = new Vector2();
         v0 = new Vector2();
@@ -38,7 +41,8 @@ public class Enemy extends Ship {
             int damage,
             float reloadInterval,
             float height,
-            int hp
+            int hp,
+            int score
     ) {
         this.regions = regions;
         this.v0.set(v0);
@@ -48,6 +52,7 @@ public class Enemy extends Ship {
         this.damage = damage;
         this.reloadInterval = reloadInterval;
         this.hp = hp;
+        this.score = score;
         setHeightProportion(height);
         v.set(descentV);
         reloadTimer = reloadInterval;
@@ -74,6 +79,7 @@ public class Enemy extends Ship {
                 break;
         }
         if (getBottom() < worldBounds.getBottom()) {
+            mainShip.damage(damage);
             destroy();
         }
     }
@@ -85,5 +91,9 @@ public class Enemy extends Ship {
                 || bullet.getBottom() > getTop()
                 || bullet.getTop() < pos.y
                 );
+    }
+
+    public int getScore() {
+        return score;
     }
 }

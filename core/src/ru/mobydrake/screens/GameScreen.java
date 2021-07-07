@@ -9,10 +9,12 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
 
 import java.util.List;
 
 import ru.mobydrake.base.BaseScreen;
+import ru.mobydrake.base.Font;
 import ru.mobydrake.math.Rect;
 import ru.mobydrake.pools.BulletPool;
 import ru.mobydrake.pools.EnemyPool;
@@ -31,6 +33,10 @@ public class GameScreen extends BaseScreen {
     private  enum State {PLAYING, PAUSE, GAME_OVER}
 
     private final int STAR_COUNT = 64;
+
+    private static final String SCORE = "SCORE:";
+    private static final String HP = "HP:";
+    private static final String LEVEL = "Level:";
 
     private TextureAtlas atlas;
     private Texture bg;
@@ -52,6 +58,12 @@ public class GameScreen extends BaseScreen {
 
     private GameOver gameOverSprite;
     private ButtonNewGame buttonNewGame;
+
+    private Font font;
+    private StringBuilder sbFrags;
+    private StringBuilder sbHp;
+    private StringBuilder sbLevel;
+    private int score;
 
     @Override
     public void show() {
@@ -77,7 +89,7 @@ public class GameScreen extends BaseScreen {
         explosionPool = new ExplosionPool(atlas, explosionSound);
         player = new MainShip(atlas, bulletPool, explosionPool);
 
-        enemyPool = new EnemyPool(bulletPool, explosionPool, worldBounds);
+        enemyPool = new EnemyPool(bulletPool, explosionPool, worldBounds, player);
         enemyGenerator = new EnemyGenerator(enemyPool, atlas, worldBounds);
 
         state = State.PLAYING;
@@ -85,6 +97,12 @@ public class GameScreen extends BaseScreen {
 
         gameOverSprite = new GameOver(atlas);
         buttonNewGame = new ButtonNewGame(atlas, this);
+
+        font = new Font("font/font.fnt", "font/font.png");
+        font.setSize(0.03f);
+        sbFrags = new StringBuilder();
+        sbHp = new StringBuilder();
+        sbLevel = new StringBuilder();
     }
 
     @Override
@@ -133,6 +151,7 @@ public class GameScreen extends BaseScreen {
         player.dispose();
         enemyPool.dispose();
         explosionPool.dispose();
+        font.dispose();
         super.dispose();
     }
 
@@ -147,7 +166,7 @@ public class GameScreen extends BaseScreen {
             bulletPool.updateActiveSprites(delta);
             player.update(delta);
             enemyPool.updateActiveSprites(delta);
-            enemyGenerator.generate(delta);
+            enemyGenerator.generate(delta, score);
         }
     }
 
@@ -185,17 +204,13 @@ public class GameScreen extends BaseScreen {
                     if (enemy.isBulletCollision(bullet)) {
                         enemy.damage(bullet.getDamage());
                         bullet.destroy();
+                        if (enemy.isDestroyed()) score += enemy.getScore();
                     }
                 }
             }
         }
     }
 
-    private void freeAllDestroyedActiveSprites() {
-        explosionPool.freeAllDestroyedActiveSprites();
-        bulletPool.freeAllDestroyedActiveSprites();
-        enemyPool.freeAllDestroyedActiveSprites();
-    }
 
     private void draw() {
         Gdx.gl.glClearColor(0.26f, 0.5f, 0.8f, 1);
@@ -207,18 +222,48 @@ public class GameScreen extends BaseScreen {
             star.draw(batch);
         }
         explosionPool.drawActiveSprites(batch);
-        if (state == State.PLAYING || state == State.PAUSE && stateBuff != State.GAME_OVER) {
-            player.draw(batch);
-            bulletPool.drawActiveSprites(batch);
-            enemyPool.drawActiveSprites(batch);
-        }
-        if (state == State.GAME_OVER) {
-            gameOverSprite.draw(batch);
-            buttonNewGame.draw(batch);
+        switch (state) {
+            case PLAYING:
+                drawGameObject();
+                break;
+            case PAUSE:
+                if (stateBuff != State.GAME_OVER) {
+                    drawGameObject();
+                } else {
+                    gameOverSprite.draw(batch);
+                    buttonNewGame.draw(batch);
+                }
+                break;
+            case GAME_OVER:
+                gameOverSprite.draw(batch);
+                buttonNewGame.draw(batch);
+                break;
         }
         batch.end();
     }
 
+    private void drawGameObject() {
+        player.draw(batch);
+        bulletPool.drawActiveSprites(batch);
+        enemyPool.drawActiveSprites(batch);
+        printInfo();
+    }
+
+    private void printInfo() {
+        sbFrags.setLength(0);
+        sbHp.setLength(0);
+        sbLevel.setLength(0);
+
+        font.draw(batch, sbFrags.append(SCORE).append(score), worldBounds.getLeft() + 0.02f, worldBounds.getTop() - 0.02f);
+        font.draw(batch, sbHp.append(HP).append(player.getHp()), worldBounds.pos.x, worldBounds.getTop() - 0.02f, Align.center);
+        font.draw(batch, sbLevel.append(LEVEL).append(enemyGenerator.getLevel()), worldBounds.getRight() - 0.02f, worldBounds.getTop() - 0.02f, Align.right);
+    }
+
+    private void freeAllDestroyedActiveSprites() {
+        explosionPool.freeAllDestroyedActiveSprites();
+        bulletPool.freeAllDestroyedActiveSprites();
+        enemyPool.freeAllDestroyedActiveSprites();
+    }
 
     @Override
     public boolean keyDown(int keycode) {
@@ -283,7 +328,8 @@ public class GameScreen extends BaseScreen {
     }
 
     public void startNewGame() {
-        state = stateBuff;
+        state = State.PLAYING;
+        score = 0;
 
         player.startNewGame();
 
